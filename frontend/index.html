@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>LearnInsight AI</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-wrapper">
+    <h1>LearnInsight AI</h1>
+
+    <button id="checkBtn">Check Backend Connection</button>
+    <p id="result"></p>
+
+    <hr />
+
+    <h2>Upload a Document</h2>
+    <input type="file" id="fileInput" accept=".pdf,.docx,.txt" />
+    <button id="uploadBtn">Upload &amp; Process</button>
+    <p id="uploadStatus"></p>
+
+    <div id="resultsSection" style="display:none;">
+      <h3 id="resultsHeading"></h3>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="summary">Summary</button>
+        <button class="tab-btn" data-tab="explanation">Simplified Explanation</button>
+        <button class="tab-btn" data-tab="quiz">Quiz</button>
+        <button class="tab-btn" data-tab="flashcards">Flashcards</button>
+        <button class="tab-btn" data-tab="notes">AI Notes</button>
+      </div>
+
+      <div id="tab-summary" class="tab-content active">
+        <div id="summaryText"></div>
+      </div>
+
+      <div id="tab-explanation" class="tab-content">
+        <div id="explanationText"></div>
+      </div>
+
+      <div id="tab-quiz" class="tab-content">
+        <div id="quizContainer"></div>
+      </div>
+
+      <div id="tab-flashcards" class="tab-content">
+        <div id="flashcardContainer"></div>
+      </div>
+
+      <div id="tab-notes" class="tab-content">
+        <pre id="notesText"></pre>
+      </div>
+    </div>
+
+    <hr />
+
+    <h2>Your Documents</h2>
+    <div id="historyList">
+      <p id="historyEmptyMessage">No documents yet. Upload your first file above to get started.</p>
+    </div>
+
+    <footer class="app-footer">
+      Built with Claude as part of the AB Talks 60-Day Claude AI Challenge.
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
