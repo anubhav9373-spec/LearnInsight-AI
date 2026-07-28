@@ -1,7 +1,6 @@
 """
 database.py
 Handles all SQLite persistence for LearnInsight AI.
-Schema matches SCHEMA.md exactly.
 """
 
 import sqlite3
@@ -18,7 +17,6 @@ def get_connection():
 
 
 def init_db():
-    """Creates the documents table if it doesn't already exist."""
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
@@ -40,25 +38,14 @@ def init_db():
 
 
 def save_document(filename, file_type, extracted_text, summary, explanation, quiz, flashcards, notes):
-    """
-    Saves a fully processed document record.
-    quiz and flashcards are stored as JSON strings.
-    Returns the new document's id.
-    """
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
         INSERT INTO documents (filename, file_type, extracted_text, summary, explanation, quiz, flashcards, notes)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """, (
-        filename,
-        file_type,
-        extracted_text,
-        summary,
-        explanation,
-        json.dumps(quiz),
-        json.dumps(flashcards),
-        notes
+        filename, file_type, extracted_text, summary, explanation,
+        json.dumps(quiz), json.dumps(flashcards), notes
     ))
     conn.commit()
     new_id = cursor.lastrowid
@@ -67,7 +54,6 @@ def save_document(filename, file_type, extracted_text, summary, explanation, qui
 
 
 def get_all_documents():
-    """Returns a lightweight list of all documents (id, filename, upload_date), most recent first."""
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT id, filename, upload_date FROM documents ORDER BY upload_date DESC")
@@ -77,7 +63,6 @@ def get_all_documents():
 
 
 def get_document_by_id(doc_id):
-    """Returns the full record for one document, or None if not found."""
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM documents WHERE id = ?", (doc_id,))
