@@ -25,7 +25,7 @@ app = Flask(
 )
 
 # --- Security hardening ---
-# Reject oversized request bodies at the Flask level BEFORE they're fully
+# Reject oversized request bodies at the Flask level BEFORE they're fully 
 # buffered into memory, not just after the fact in our own size check.
 app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10MB
 
