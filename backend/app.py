@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
@@ -9,7 +9,13 @@ from database import init_db, save_document, get_all_documents, get_document_by_
 
 load_dotenv()
 
-app = Flask(__name__)
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+app = Flask(
+    __name__,
+    template_folder=os.path.join(BASE_DIR, "templates"),
+    static_folder=os.path.join(BASE_DIR, "static")
+)
 CORS(app)
 
 ALLOWED_EXTENSIONS = {"pdf", "docx", "txt"}
@@ -24,6 +30,11 @@ def allowed_file(filename):
 
 def get_extension(filename):
     return filename.rsplit(".", 1)[-1].lower()
+
+
+@app.route("/", methods=["GET"])
+def index():
+    return render_template("index.html")
 
 
 @app.route("/api/health", methods=["GET"])

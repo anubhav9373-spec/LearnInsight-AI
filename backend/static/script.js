@@ -1,4 +1,4 @@
-const BACKEND_URL = "http://127.0.0.1:5000";
+const BACKEND_URL = "";
 
 let currentQuiz = [];
 let userAnswers = [];
@@ -7,13 +7,25 @@ let currentCardIndex = 0;
 
 document.getElementById("checkBtn").addEventListener("click", async () => {
   const resultEl = document.getElementById("result");
+  resultEl.className = "";
   resultEl.textContent = "Checking...";
   try {
     const response = await fetch(`${BACKEND_URL}/api/health`);
     const data = await response.json();
     resultEl.textContent = `Backend says: ${data.status}`;
+    resultEl.className = "status-ok";
   } catch (error) {
     resultEl.textContent = "Could not reach the backend. Is it running?";
+    resultEl.className = "status-error";
+  }
+});
+
+document.getElementById("fileInput").addEventListener("change", (e) => {
+  const nameEl = document.getElementById("fileChosenName");
+  if (e.target.files && e.target.files.length > 0) {
+    nameEl.textContent = e.target.files[0].name;
+  } else {
+    nameEl.textContent = "No file chosen";
   }
 });
 
@@ -26,12 +38,17 @@ document.querySelectorAll(".tab-btn").forEach((btn) => {
   });
 });
 
-document.getElementById("uploadBtn").addEventListener("click", async () => {
+const uploadBtn = document.getElementById("uploadBtn");
+
+uploadBtn.addEventListener("click", async () => {
   const fileInput = document.getElementById("fileInput");
   const statusEl = document.getElementById("uploadStatus");
 
+  statusEl.className = "";
+
   if (!fileInput.files || fileInput.files.length === 0) {
     statusEl.textContent = "Please select a file first.";
+    statusEl.className = "status-error";
     return;
   }
 
@@ -39,7 +56,10 @@ document.getElementById("uploadBtn").addEventListener("click", async () => {
   const formData = new FormData();
   formData.append("file", file);
 
-  statusEl.textContent = "Uploading and generating AI content (this may take 10-20 seconds)...";
+  uploadBtn.disabled = true;
+  uploadBtn.textContent = "Processing...";
+  statusEl.className = "status-loading";
+  statusEl.innerHTML = '<span class="spinner"></span>Uploading and generating AI content (this may take 10-20 seconds)...';
 
   try {
     const response = await fetch(`${BACKEND_URL}/api/process`, {
@@ -49,16 +69,22 @@ document.getElementById("uploadBtn").addEventListener("click", async () => {
     const data = await response.json();
 
     if (!response.ok) {
-      statusEl.textContent = `Error: ${data.error}`;
+      statusEl.className = "status-error";
+      statusEl.textContent = data.error;
       return;
     }
 
-    statusEl.textContent = "Done.";
+    statusEl.className = "status-done";
+    statusEl.textContent = "Done! Your study materials are ready below.";
     displayDocument(data);
     loadHistory();
 
   } catch (error) {
+    statusEl.className = "status-error";
     statusEl.textContent = "Could not reach the backend. Is it running?";
+  } finally {
+    uploadBtn.disabled = false;
+    uploadBtn.textContent = "Upload & Process";
   }
 });
 
@@ -86,6 +112,7 @@ function displayDocument(doc) {
 
 async function loadHistory() {
   const historyList = document.getElementById("historyList");
+  historyList.innerHTML = '<p style="text-align:center; color:#6B7085; font-size:14px;"><span class="spinner"></span>Loading...</p>';
 
   try {
     const response = await fetch(`${BACKEND_URL}/api/history`);
@@ -116,7 +143,7 @@ async function loadHistory() {
     });
 
   } catch (error) {
-    historyList.innerHTML = '<p style="color:#a33;">Could not load document history. Is the backend running?</p>';
+    historyList.innerHTML = '<p style="color:#B3261E; text-align:center; font-size:14px;">Could not load document history. Is the backend running?</p>';
   }
 }
 
@@ -178,6 +205,7 @@ function renderQuiz(quiz) {
   const submitBtn = document.createElement("button");
   submitBtn.textContent = "Submit Quiz";
   submitBtn.id = "submitQuizBtn";
+  submitBtn.className = "btn-primary";
   submitBtn.addEventListener("click", submitQuiz);
   container.appendChild(submitBtn);
 
@@ -261,6 +289,7 @@ function drawCurrentCard() {
 
   const prevBtn = document.createElement("button");
   prevBtn.textContent = "< Prev";
+  prevBtn.className = "btn-secondary";
   prevBtn.disabled = currentCardIndex === 0;
   prevBtn.addEventListener("click", () => {
     currentCardIndex--;
@@ -273,6 +302,7 @@ function drawCurrentCard() {
 
   const nextBtn = document.createElement("button");
   nextBtn.textContent = "Next >";
+  nextBtn.className = "btn-secondary";
   nextBtn.disabled = currentCardIndex === currentFlashcards.length - 1;
   nextBtn.addEventListener("click", () => {
     currentCardIndex++;

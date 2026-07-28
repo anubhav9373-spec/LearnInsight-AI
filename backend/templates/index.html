@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LearnInsight AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <div class="page-wrapper">
+    <header class="app-header">
+      <h1>LearnInsight AI</h1>
+      <p class="app-tagline">Turn any document into a complete AI-powered learning experience.</p>
+    </header>
+
+    <div class="connection-row">
+      <button id="checkBtn" class="btn-secondary">Check Backend Connection</button>
+      <span id="result" role="status"></span>
+    </div>
+
+    <section class="card">
+      <h2>Upload a Document</h2>
+      <div class="upload-zone" id="uploadZone">
+        <p>Supports PDF, DOCX, and TXT files (max 10MB)</p>
+        <div class="upload-controls">
+          <label for="fileInput" class="btn-secondary file-label">Choose File</label>
+          <input type="file" id="fileInput" accept=".pdf,.docx,.txt" class="visually-hidden-file-input" />
+          <span id="fileChosenName" class="file-chosen-name">No file chosen</span>
+          <button id="uploadBtn" class="btn-primary">Upload &amp; Process</button>
+        </div>
+      </div>
+      <p id="uploadStatus" role="status" aria-live="polite"></p>
+    </section>
+
+    <section id="resultsSection" class="card" style="display:none;">
+      <h3 id="resultsHeading"></h3>
+      <div class="tabs" role="tablist">
+        <button class="tab-btn active" data-tab="summary" role="tab">Summary</button>
+        <button class="tab-btn" data-tab="explanation" role="tab">Simplified Explanation</button>
+        <button class="tab-btn" data-tab="quiz" role="tab">Quiz</button>
+        <button class="tab-btn" data-tab="flashcards" role="tab">Flashcards</button>
+        <button class="tab-btn" data-tab="notes" role="tab">AI Notes</button>
+      </div>
+
+      <div id="tab-summary" class="tab-content active" role="tabpanel">
+        <div id="summaryText"></div>
+      </div>
+
+      <div id="tab-explanation" class="tab-content" role="tabpanel">
+        <div id="explanationText"></div>
+      </div>
+
+      <div id="tab-quiz" class="tab-content" role="tabpanel">
+        <div id="quizContainer"></div>
+      </div>
+
+      <div id="tab-flashcards" class="tab-content" role="tabpanel">
+        <div id="flashcardContainer"></div>
+      </div>
+
+      <div id="tab-notes" class="tab-content" role="tabpanel">
+        <pre id="notesText"></pre>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Your Documents</h2>
+      <div id="historyList">
+        <p id="historyEmptyMessage">No documents yet. Upload your first file above to get started.</p>
+      </div>
+    </section>
+
+    <footer class="app-footer">
+      Built with Claude as part of the AB Talks 60-Day Claude AI Challenge.
+    </footer>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
