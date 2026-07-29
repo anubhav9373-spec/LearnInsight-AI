@@ -44,6 +44,13 @@ https://learninsight-ai.onrender.com
 
 ### Setup
 
+Create a `.env` file inside `backend/`:
+
+```env
+GEMINI_API_KEY=your_api_key_here
+```
+
+
 ```bash
 cd backend
 python -m venv venv
