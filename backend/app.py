@@ -1,5 +1,5 @@
 import logging
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
@@ -24,15 +24,8 @@ app = Flask(
     static_folder=os.path.join(BASE_DIR, "static")
 )
 
-# --- Security hardening ---
-# Reject oversized request bodies at the Flask level BEFORE they're fully 
-# buffered into memory, not just after the fact in our own size check.
 app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10MB
 
-# Restrict CORS to same-origin use only. Since the frontend is now served
-# by this same Flask app, no external origin legitimately needs API access.
-# This prevents other websites from calling our API and burning the
-# free-tier daily Gemini quota.
 CORS(app, resources={r"/api/*": {"origins": []}})
 
 ALLOWED_EXTENSIONS = {"pdf", "docx", "txt"}
@@ -62,8 +55,7 @@ def index():
 
 @app.route("/favicon.ico")
 def favicon():
-    # Prevents noisy 404s in server logs for the browser's automatic favicon request.
-    return "", 204
+    return send_from_directory(app.static_folder, "favicon.svg", mimetype="image/svg+xml")
 
 
 @app.route("/api/health", methods=["GET"])
@@ -97,11 +89,8 @@ def process_document():
     try:
         extracted_text = extract_text(file.filename, file)
     except ParsingError as e:
-        # Log the real, detailed error server-side for debugging, but show
-        # the user a clean, generic message — never leak raw library
-        # exception internals to the client.
         logger.warning(f"Parsing failed for '{file.filename}': {e}")
-        return jsonify({"error": "We couldn't read this file. Please check it isn't corrupted and try again."}), 422
+        return jsonify({"error": str(e)}), 422
     except Exception as e:
         logger.error(f"Unexpected parsing error for '{file.filename}': {e}")
         return jsonify({"error": "Something went wrong processing your document."}), 500
@@ -159,7 +148,6 @@ def get_document(doc_id):
     return jsonify(document)
 
 
-# --- Consistent JSON error responses for API routes ---
 @app.errorhandler(404)
 def not_found(e):
     if request.path.startswith("/api/"):
